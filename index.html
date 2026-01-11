@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sağlık Sigortası Fiyat Hesapla</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome (İkonlar) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Font (Yazı Tipi) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .gradient-bg {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      }
+
+      /* Yükleniyor Çarkı */
+      .spinner {
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 3px solid white;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Modal (Pop-up) Animasyonu */
+      .modal {
+        transition: opacity 0.3s ease-in-out;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .modal.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+  <body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <!-- Ana Kart -->
+    <div
+      class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden relative"
+    >
+      <!-- Üst Başlık -->
+      <div class="bg-slate-800 p-6 text-center">
+        <h1
+          class="text-2xl font-bold text-white flex items-center justify-center gap-2"
+        >
+          <i class="fa-solid fa-calculator text-blue-400"></i>
+          Sağlık Sigortası Fiyat Hesapla
+        </h1>
+        <p class="text-slate-400 text-sm mt-1">
+          Bilgilerinizi girin, tahmini yıllık masrafınızı öğrenin.
+        </p>
+      </div>
+
+      <div class="p-8 space-y-5">
+        <!-- FORM ALANI -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Yaş -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">
+              <i class="fa-solid fa-cake-candles text-blue-500 mr-1"></i> Yaş
+            </label>
+            <input
+              type="number"
+              id="age"
+              value="30"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+            />
+          </div>
+
+          <!-- Cinsiyet -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">
+              <i class="fa-solid fa-venus-mars text-pink-500 mr-1"></i> Cinsiyet
+            </label>
+            <select
+              id="sex"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+            >
+              <option value="Erkek">Erkek</option>
+              <option value="Kadın">Kadın</option>
+            </select>
+          </div>
+
+          <!-- BMI ve Hesaplama Butonu -->
+          <div>
+            <label
+              class="block text-sm font-semibold text-gray-700 mb-1 flex justify-between"
+            >
+              <span
+                ><i class="fa-solid fa-weight-scale text-green-500 mr-1"></i>
+                BMI</span
+              >
+              <button
+                onclick="toggleModal(true)"
+                class="text-xs text-blue-600 hover:text-blue-800 underline cursor-pointer"
+              >
+                Bilmiyorum, Hesapla?
+              </button>
+            </label>
+            <input
+              type="number"
+              id="bmi"
+              step="0.1"
+              value="25.0"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+            />
+          </div>
+
+          <!-- Çocuk Sayısı -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">
+              <i class="fa-solid fa-children text-yellow-500 mr-1"></i> Çocuk
+            </label>
+            <input
+              type="number"
+              id="children"
+              value="0"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+            />
+          </div>
+
+          <!-- Sigara -->
+          <div class="col-span-1 md:col-span-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">
+              <i class="fa-solid fa-smoking text-red-500 mr-1"></i> Sigara
+              Kullanımı
+            </label>
+            <select
+              id="smoker"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+            >
+              <option value="Hayır">Hayır (Kullanmıyorum)</option>
+              <option value="Evet">Evet (Kullanıyorum)</option>
+            </select>
+          </div>
+
+          <!-- Bölge -->
+          <div class="col-span-1 md:col-span-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">
+              <i class="fa-solid fa-map-location-dot text-purple-500 mr-1"></i>
+              Bölge (ABD Veri Seti)
+            </label>
+            <select
+              id="region"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+            >
+              <option value="southwest">Güneybatı (Southwest)</option>
+              <option value="southeast">Güneydoğu (Southeast)</option>
+              <option value="northwest">Kuzeybatı (Northwest)</option>
+              <option value="northeast">Kuzeydoğu (Northeast)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Hesapla Butonu -->
+        <button
+          onclick="hesapla()"
+          id="btnHesapla"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transform active:scale-95 transition-all flex items-center justify-center gap-2"
+        >
+          <span>FİYATI HESAPLA</span>
+        </button>
+
+        <!-- SONUÇ ALANI -->
+        <div id="sonucAlani" class="hidden">
+          <div class="border-t border-gray-200 pt-6 mt-2">
+            <div
+              class="bg-gray-50 rounded-xl p-5 text-center border border-gray-200"
+            >
+              <p
+                class="text-gray-500 text-sm font-medium uppercase tracking-wide"
+              >
+                Tahmini Yıllık Masraf
+              </p>
+
+              <!-- Fiyat -->
+              <h2
+                id="fiyatMetni"
+                class="text-3xl font-extrabold text-slate-800 my-2"
+              >
+                $0.00
+              </h2>
+
+              <!-- Risk Etiketi -->
+              <div class="flex justify-center mt-3">
+                <span
+                  id="riskEtiketi"
+                  class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gray-200 text-gray-800"
+                >
+                  --
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HATA MESAJI -->
+        <div
+          id="hataAlani"
+          class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4 text-center text-sm"
+          role="alert"
+        >
+          <strong class="font-bold">Hata!</strong>
+          <span class="block sm:inline" id="hataMetni"
+            >Sunucuya bağlanılamadı.</span
+          >
+        </div>
+      </div>
+
+      <!-- Alt Bilgi -->
+      <div class="bg-gray-50 p-4 text-center border-t border-gray-100">
+        <p class="text-xs text-gray-400">Powered by Random Forest & FastAPI</p>
+      </div>
+    </div>
+
+    <!-- BMI HESAPLAMA MODALI (Pop-up) -->
+    <div
+      id="bmiModal"
+      class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-white rounded-xl shadow-2xl p-6 w-80 relative transform transition-all scale-100"
+      >
+        <button
+          onclick="toggleModal(false)"
+          class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+        >
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+
+        <h3 class="text-lg font-bold text-gray-800 mb-4 text-center">
+          BMI Hesaplayıcı
+        </h3>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Boy (cm)</label>
+            <input
+              type="number"
+              id="calcHeight"
+              placeholder="Örn: 175"
+              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Kilo (kg)</label>
+            <input
+              type="number"
+              id="calcWeight"
+              placeholder="Örn: 70"
+              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+            />
+          </div>
+
+          <button
+            onclick="calculateBMI()"
+            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg transition"
+          >
+            Hesapla ve Kaydet
+          </button>
+
+          <p
+            id="bmiResultText"
+            class="text-center text-sm font-bold text-gray-700 mt-2 h-5"
+          ></p>
+        </div>
+      </div>
+    </div>
+
+    <!--JAVASCRIPT KODLARI -->
+    <script>
+      //BMI MODAL İŞLEMLERİ
+      function toggleModal(show) {
+        const modal = document.getElementById("bmiModal");
+        if (show) {
+          modal.classList.add("active");
+          // Inputları temizle
+          document.getElementById("calcHeight").value = "";
+          document.getElementById("calcWeight").value = "";
+          document.getElementById("bmiResultText").innerText = "";
+        } else {
+          modal.classList.remove("active");
+        }
+      }
+
+      function calculateBMI() {
+        const heightCm = parseFloat(
+          document.getElementById("calcHeight").value
+        );
+        const weightKg = parseFloat(
+          document.getElementById("calcWeight").value
+        );
+
+        if (!heightCm || !weightKg || heightCm <= 0 || weightKg <= 0) {
+          document.getElementById("bmiResultText").innerText =
+            "Lütfen geçerli değerler girin.";
+          document
+            .getElementById("bmiResultText")
+            .classList.add("text-red-500");
+          return;
+        }
+
+        // BMI Formülü: kg / (m * m)
+        const heightM = heightCm / 100;
+        const bmi = weightKg / (heightM * heightM);
+        const roundedBMI = bmi.toFixed(1);
+
+        // Ana ekrandaki inputa yaz
+        document.getElementById("bmi").value = roundedBMI;
+
+        // Kullanıcıya göster ve kapat
+        document
+          .getElementById("bmiResultText")
+          .classList.remove("text-red-500");
+        document
+          .getElementById("bmiResultText")
+          .classList.add("text-green-600");
+        document.getElementById(
+          "bmiResultText"
+        ).innerText = `BMI: ${roundedBMI} (Aktarıldı)`;
+
+        setTimeout(() => toggleModal(false), 1000); // 1 saniye sonra kapat
+      }
+
+      // API İŞLEMLERİ
+      async function hesapla() {
+        const btn = document.getElementById("btnHesapla");
+        const sonucAlani = document.getElementById("sonucAlani");
+        const hataAlani = document.getElementById("hataAlani");
+        const fiyatMetni = document.getElementById("fiyatMetni");
+        const riskEtiketi = document.getElementById("riskEtiketi");
+        const hataMetni = document.getElementById("hataMetni");
+        const btnSpan = btn.querySelector("span");
+
+        // Loading Durumu Başlat
+        btn.disabled = true;
+        btnSpan.innerText = "HESAPLANIYOR...";
+        const spinner = document.createElement("div");
+        spinner.className = "spinner mr-2";
+        btn.prepend(spinner);
+
+        sonucAlani.classList.add("hidden");
+        hataAlani.classList.add("hidden");
+
+        // 2. Verileri Topla
+        const data = {
+          age: parseInt(document.getElementById("age").value),
+          sex: document.getElementById("sex").value,
+          bmi: parseFloat(document.getElementById("bmi").value),
+          children: parseInt(document.getElementById("children").value),
+          smoker: document.getElementById("smoker").value,
+          region: document.getElementById("region").value,
+        };
+
+        try {
+          // API İsteği
+          const response = await fetch("/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            // Backend'den gelen validation (doğrulama) hatalarını işle
+            let errorMsg = "Bir hata oluştu.";
+
+            if (result.detail) {
+              if (Array.isArray(result.detail)) {
+                // Pydantic validation hatası ise
+                const err = result.detail[0];
+                errorMsg = `${err.loc[1]}: ${err.msg}`;
+
+                // Hata mesajlarını Türkçeleştirme
+                if (errorMsg.includes("less than"))
+                  errorMsg = "Girilen değer çok yüksek!";
+                if (errorMsg.includes("greater than"))
+                  errorMsg = "Girilen değer çok düşük!";
+              } else {
+                // Genel hata
+                errorMsg = result.detail;
+              }
+            }
+            throw new Error(errorMsg);
+          }
+
+          // Başarılı Sonuç Gösterimi
+          fiyatMetni.innerText = `$${result.prediction_usd.toLocaleString(
+            "en-US"
+          )}`;
+
+          // Risk Etiketi (Backend'den gelen risk_level verisine göre)
+          const risk = result.risk_level || "Bilinmiyor";
+          riskEtiketi.innerText = risk;
+
+          // Risk Rengi Ayarlama (Tailwind Classları)
+          if (risk === "Yüksek Risk") {
+            riskEtiketi.className =
+              "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-100 text-red-700 border border-red-200";
+          } else {
+            riskEtiketi.className =
+              "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-green-100 text-green-700 border border-green-200";
+          }
+
+          sonucAlani.classList.remove("hidden");
+        } catch (error) {
+          hataAlani.classList.remove("hidden");
+          hataMetni.innerText = error.message;
+          console.error(error);
+        } finally {
+          // 4. Loading Durumu Bitir
+          btn.disabled = false;
+          btnSpan.innerText = "FİYATI HESAPLA";
+          if (btn.querySelector(".spinner")) {
+            btn.querySelector(".spinner").remove();
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

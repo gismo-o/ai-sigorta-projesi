@@ -1,0 +1,11 @@
+services:
+  api:
+    build: .
+    container_name: sigorta_api_container
+    ports:
+      - "8000:8000"  # Bilgisayarın 8000 portunu konteynerin 8000 portuna bağla
+    volumes:
+      - .:/app       # Canlı Geliştirme (Hot-Reload): Kodunu değiştirdiğinde Docker'ı yeniden kurmana gerek kalmaz.
+    environment:
+      - LOG_LEVEL=info
+    restart: always  # Çökerse otomatik yeniden başlat
