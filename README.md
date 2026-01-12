@@ -4,6 +4,8 @@
 
 🔗 **Canlı Demo:** [https://ai-sigorta-projesi.onrender.com](https://ai-sigorta-projesi.onrender.com)
 
+<img src="https://github.com/user-attachments/assets/2baf9689-237b-4cf1-81e0-b78cbcb901b6" width="705">
+
 Geliştirilen sistem, geçmiş müşteri verilerini analiz ederek karmaşık risk faktörlerini (Örn: Sigara ve Obezite etkileşimi) öğrenen bir Makine Öğrenmesi modeli üzerine kurulmuştur. Bu model, Dockerize edilmiş bir REST API aracılığıyla saniyeler içinde fiyat teklifi sunan modern bir web arayüzüne dönüştürülmüştür.
 
 ## Kullanılan Teknolojiler (Tech Stack)
@@ -91,3 +93,4 @@ ai-sigorta-projesi/
 ├── health_insurance_ai_model.ipynb # EDA, İstatistiksel Testler, Model Benchmarking ve Hiperparametre Optimizasyonu
 └── README.md                # Proje Dokümantasyonu
 ```
+
